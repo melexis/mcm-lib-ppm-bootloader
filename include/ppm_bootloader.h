@@ -30,7 +30,8 @@
 
 #include "gen_bootloader.h"
 #include "intelhex.h"
-#include "mlx_err.h"
+
+#include "ppm_err.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +50,7 @@ void ppmbtl_init(void);
  * @param[in]  ihex  intel hex container to perform action with.
  * @returns  error code representing the result of the action.
  */
-mlx_err_t ppmbtl_doAction(bool manpow,
+ppm_err_t ppmbtl_doAction(bool manpow,
                           bool broadcast,
                           uint32_t bitrate,
                           btl_memory_t memory,

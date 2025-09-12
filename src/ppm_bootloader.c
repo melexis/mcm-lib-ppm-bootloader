@@ -27,7 +27,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -35,13 +34,12 @@
 #include "intelhex.h"
 #include "mlx_chip.h"
 #include "mlx_crc.h"
-#include "mlx_err.h"
+
+#include "ppm_err.h"
 #include "ppm_session.h"
 #include "rmt_ppm.h"
 
 #include "ppm_bootloader.h"
-
-static const char *TAG = "ppm_bootloader";
 
 
 /** Request the ic to enter into programming mode
@@ -52,7 +50,7 @@ static const char *TAG = "ppm_bootloader";
  * @param[out]  chip_info  information about the connected chip.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_enterProgrammingMode(bool broadcast,
+static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
                                              uint32_t bitrate,
                                              uint32_t pattern_time,
                                              const MlxChip_t ** chip_info);
@@ -63,7 +61,7 @@ static mlx_err_t ppmbtl_enterProgrammingMode(bool broadcast,
  * @param[in]  broadcast  en/disable broadcast mode during upload.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool broadcast);
+static ppm_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool broadcast);
 
 /** Program the flash memory of the connected ic
  *
@@ -72,7 +70,7 @@ static mlx_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool br
  * @param[in]  ihex  intel hex container to be programmed.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
 
 /** Verify the flash memory of the connected ic
  *
@@ -80,7 +78,7 @@ static mlx_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool bro
  * @param[in]  ihex  intel hex container to be verified.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
 
 /** Program the flash cs memory of the connected ic
  *
@@ -89,7 +87,7 @@ static mlx_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
  * @param[in]  ihex  intel hex container to be programmed.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
 
 /** Verify the flash cs memory of the connected ic
  *
@@ -97,7 +95,7 @@ static mlx_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
  * @param[in]  ihex  intel hex container to be verified.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
 
 /** Program the eeprom memory of the connected ic
  *
@@ -106,7 +104,7 @@ static mlx_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
  * @param[in]  ihex  intel hex container to be programmed.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
 
 /** Verify the eeprom memory of the connected ic
  *
@@ -114,7 +112,7 @@ static mlx_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool br
  * @param[in]  ihex  intel hex container to be verified.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
 
 /** Check and if needed execute a programming keys session
  *
@@ -122,88 +120,88 @@ static mlx_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexCont
  * @param[in]  broadcast  en/disable broadcast mode during upload.
  * @return  an error code representing the result of the operation.
  */
-static mlx_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, bool broadcast);
+static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, bool broadcast);
 
 
-static mlx_err_t ppmbtl_enterProgrammingMode(bool broadcast,
+static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
                                              uint32_t bitrate,
                                              uint32_t pattern_time,
                                              const MlxChip_t ** chip_info) {
-    mlx_err_t result = MLX_OK;
+    ppm_err_t result = PPM_OK;
 
     if (chip_info != NULL) {
         if (rmt_ppm_send_enter_ppm_pattern(pattern_time) != ESP_OK) {
-            result = MLX_FAIL_BTL_ENTER_PROG_MODE;
+            result = PPM_FAIL_BTL_ENTER_PPM_MODE;
         }
 
         vTaskDelay(5 / portTICK_PERIOD_MS);
 
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             if (rmt_ppm_set_bitrate(bitrate) != ESP_OK) {
-                result = MLX_FAIL_BTL_SET_BAUD;
+                result = PPM_FAIL_SET_BAUD;
             }
         }
 
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             if (rmt_ppm_send_calibration_frame() != ESP_OK) {
-                result = MLX_FAIL_BTL_ENTER_PROG_MODE;
+                result = PPM_FAIL_CALIBRATION;
             }
         }
 
         uint16_t project_id;
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             ppm_session_config_t unlock_cfg = PPM_SESSION_UNLOCK_DEFAULT;
             unlock_cfg.request_ack = !broadcast;
             if (ppmsession_doUnlock(&unlock_cfg, &project_id) != ESP_OK) {
-                result = MLX_FAIL_BTL_ENTER_PROG_MODE;
+                result = PPM_FAIL_UNLOCK;
             }
         }
 
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             *chip_info = mlxchip_getCamcuChip(project_id);
             if ((*chip_info != NULL) && ((*chip_info)->bootloaders.ppm_loader == NULL)) {
-                result = MLX_FAIL_BTL_CHIP_NOT_SUPPORTED;
+                result = PPM_FAIL_CHIP_NOT_SUPPORTED;
             }
         }
     } else {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     }
 
     return result;
 }
 
-static mlx_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool broadcast) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool broadcast) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
     if (chip_info != NULL) {
         uint16_t proj_id_resp;
         ppm_session_config_t reset_cfg = PPM_SESSION_CHIP_RESET_DEFAULT;
         reset_cfg.request_ack = !broadcast;
         if (ppmsession_doChipReset(&reset_cfg, &proj_id_resp) == ESP_OK) {
-            result = MLX_OK;
+            result = PPM_OK;
         }
     } else {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     }
     return result;
 }
 
-static mlx_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
-    mlx_err_t result;
+static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
+    ppm_err_t result;
     if ((ihex == NULL) || (chip_info == NULL)) {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     } else {
         result = ppmbtl_checkAndDoProgKeysSession(chip_info, broadcast);
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             uint32_t memStart = chip_info->memories.flash->start;
             uint32_t memEnd = chip_info->memories.flash->start + chip_info->memories.flash->length - 1;
 
             if ((intelhex_minAddress(ihex) > memEnd) || (intelhex_maxAddress(ihex) < memStart)) {
-                result = MLX_FAIL_BTL_MISSING_DATA;
+                result = PPM_FAIL_MISSING_DATA;
             } else {
                 size_t memLen = chip_info->memories.flash->length;
                 uint8_t *content = malloc(memLen);
                 if (content == NULL) {
-                    result = MLX_FAIL_INTERNAL;
+                    result = PPM_FAIL_INTERNAL;
                 } else {
                     (void)intelhex_getFilled(ihex, memStart, content, memLen);
 
@@ -214,8 +212,8 @@ static mlx_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool bro
                                                                chip_info->memories.flash->erase_time * 1.25);
                     session_cfg.pageX_ack_timeout = (uint16_t)(chip_info->memories.flash->write_time * 1.25);
                     session_cfg.session_ack_timeout = (uint16_t)(memLen * 0.0000625);
-                    if (ppmsession_doFlashProgramming(&session_cfg, &content[0], memLen) != MLX_OK) {
-                        result = MLX_FAIL_BTL_PROGRAMMING_FAILED;
+                    if (ppmsession_doFlashProgramming(&session_cfg, &content[0], memLen) != PPM_OK) {
+                        result = PPM_FAIL_PROGRAMMING_FAILED;
                     }
                 }
                 free(content);
@@ -225,10 +223,10 @@ static mlx_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool bro
     return result;
 }
 
-static mlx_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     } else {
         size_t memLen = chip_info->memories.flash->length;
         uint32_t memStart = chip_info->memories.flash->start;
@@ -237,11 +235,11 @@ static mlx_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
         if ((memLen <= 4) ||
             (intelhex_minAddress(ihex) > memEnd) ||
             (intelhex_maxAddress(ihex) < memStart)) {
-            result = MLX_FAIL_BTL_MISSING_DATA;
+            result = PPM_FAIL_MISSING_DATA;
         } else {
             uint16_t *content = (uint16_t *)malloc(memLen);
             if (content == NULL) {
-                result = MLX_FAIL_INTERNAL;
+                result = PPM_FAIL_INTERNAL;
             } else {
                 (void)intelhex_getFilled(ihex, memStart, (uint8_t*)content, memLen);
                 uint32_t hex_crc = crc_calc24bitCrc(content, memLen / 2, 1u);
@@ -250,9 +248,9 @@ static mlx_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
                 ppm_session_config_t session_cfg = PPM_SESSION_FLASH_CRC_DEFAULT;
                 session_cfg.session_ack_timeout = (uint16_t)(memLen * 0.0000625);
                 if ((ppmsession_doFlashCrc(&session_cfg, memLen, &chip_crc) != ESP_OK) || (chip_crc != hex_crc)) {
-                    result = MLX_FAIL_BTL_VERIFY_FAILED;
+                    result = PPM_FAIL_VERIFY_FAILED;
                 } else {
-                    result = MLX_OK;
+                    result = PPM_OK;
                 }
             }
             free(content);
@@ -261,18 +259,18 @@ static mlx_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
     return result;
 }
 
-static mlx_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     } else {
         result = ppmbtl_checkAndDoProgKeysSession(chip_info, broadcast);
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             uint32_t memStart = chip_info->memories.flash_cs->start;
             uint32_t memEnd = chip_info->memories.flash_cs->start + chip_info->memories.flash_cs->writeable - 1;
 
             if ((intelhex_minAddress(ihex) > memEnd) || (intelhex_maxAddress(ihex) < memStart)) {
-                result = MLX_FAIL_BTL_MISSING_DATA;
+                result = PPM_FAIL_MISSING_DATA;
             } else {
                 /* determine length to program */
                 size_t memLen = intelhex_maxAddress(ihex) - chip_info->memories.flash_cs->start + 1;
@@ -286,7 +284,7 @@ static mlx_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
                 }
                 uint8_t *content = malloc(memLen);
                 if (content == NULL) {
-                    result = MLX_FAIL_INTERNAL;
+                    result = PPM_FAIL_INTERNAL;
                 } else {
                     (void)intelhex_getFilled(ihex, memStart, content, memLen);
 
@@ -297,8 +295,8 @@ static mlx_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
                                                                chip_info->memories.flash_cs->erase_time * 1.25);
                     session_cfg.pageX_ack_timeout = (uint16_t)(chip_info->memories.flash_cs->write_time * 1.25);
                     session_cfg.session_ack_timeout = (uint16_t)(memLen * 0.0000625);
-                    if (ppmsession_doFlashCsProgramming(&session_cfg, &content[0], memLen) != MLX_OK) {
-                        result = MLX_FAIL_BTL_PROGRAMMING_FAILED;
+                    if (ppmsession_doFlashCsProgramming(&session_cfg, &content[0], memLen) != PPM_OK) {
+                        result = PPM_FAIL_PROGRAMMING_FAILED;
                     }
                 }
                 free(content);
@@ -308,16 +306,16 @@ static mlx_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
     return result;
 }
 
-static mlx_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     } else {
         uint32_t memStart = chip_info->memories.flash_cs->start;
         uint32_t memEnd = chip_info->memories.flash_cs->start + chip_info->memories.flash_cs->length - 1;
 
         if ((intelhex_minAddress(ihex) > memEnd) || (intelhex_maxAddress(ihex) < memStart)) {
-            result = MLX_FAIL_BTL_MISSING_DATA;
+            result = PPM_FAIL_MISSING_DATA;
         } else {
             /* determine length to program */
             size_t memLen = intelhex_maxAddress(ihex) - chip_info->memories.flash_cs->start + 1;
@@ -331,7 +329,7 @@ static mlx_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
             }
             uint8_t *content = malloc(memLen);
             if (content == NULL) {
-                result = MLX_FAIL_INTERNAL;
+                result = PPM_FAIL_INTERNAL;
             } else {
                 (void)intelhex_getFilled(ihex, memStart, (uint8_t*)content, memLen);
 
@@ -339,9 +337,9 @@ static mlx_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
                 uint16_t chip_crc;
                 ppm_session_config_t session_cfg = PPM_SESSION_FLASH_CS_CRC_DEFAULT;
                 if ((ppmsession_doFlashCsCrc(&session_cfg, memLen, &chip_crc) != ESP_OK) || (chip_crc != hex_crc)) {
-                    result = MLX_FAIL_BTL_VERIFY_FAILED;
+                    result = PPM_FAIL_VERIFY_FAILED;
                 } else {
-                    result = MLX_OK;
+                    result = PPM_OK;
                 }
             }
             free(content);
@@ -350,26 +348,26 @@ static mlx_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
     return result;
 }
 
-static mlx_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     } else {
         result = ppmbtl_checkAndDoProgKeysSession(chip_info, broadcast);
-        if (result == MLX_OK) {
+        if (result == PPM_OK) {
             uint32_t memStart = chip_info->memories.nv_memory->start;
             uint32_t memEnd = chip_info->memories.nv_memory->start + chip_info->memories.nv_memory->writeable - 1;
 
             if ((intelhex_minAddress(ihex) > memEnd) || (intelhex_maxAddress(ihex) < memStart)) {
-                result = MLX_FAIL_BTL_MISSING_DATA;
+                result = PPM_FAIL_MISSING_DATA;
             } else {
                 uint8_t *content = malloc(chip_info->memories.nv_memory->writeable);
                 if (content == NULL) {
-                    result = MLX_FAIL_INTERNAL;
+                    result = PPM_FAIL_INTERNAL;
                 } else {
                     /* assemble blocks of eeprom pages */
                     uint32_t currAddr = memStart;
-                    while ((currAddr < memEnd) && (result == MLX_OK)) {
+                    while ((currAddr < memEnd) && (result == PPM_OK)) {
                         bool inBlock = true;
                         uint16_t currLen = 0u;
                         uint16_t currOff = currAddr - memStart;
@@ -400,8 +398,8 @@ static mlx_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool br
                             if (ppmsession_doEepromProgramming(&session_cfg,
                                                                currOff,
                                                                &content[0],
-                                                               currLen) != MLX_OK) {
-                                result = MLX_FAIL_BTL_PROGRAMMING_FAILED;
+                                                               currLen) != PPM_OK) {
+                                result = PPM_FAIL_PROGRAMMING_FAILED;
                             }
                         }
                     }
@@ -413,25 +411,25 @@ static mlx_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool br
     return result;
 }
 
-static mlx_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
-        result = MLX_FAIL_INTERNAL;
+        result = PPM_FAIL_INTERNAL;
     } else {
         uint32_t memStart = chip_info->memories.nv_memory->start;
         uint32_t memEnd = chip_info->memories.nv_memory->start + chip_info->memories.nv_memory->length - 1;
 
         if ((intelhex_minAddress(ihex) > memEnd) || (intelhex_maxAddress(ihex) < memStart)) {
-            result = MLX_FAIL_BTL_MISSING_DATA;
+            result = PPM_FAIL_MISSING_DATA;
         } else {
             uint8_t *content = malloc(chip_info->memories.nv_memory->writeable);
             if (content == NULL) {
-                result = MLX_FAIL_INTERNAL;
+                result = PPM_FAIL_INTERNAL;
             } else {
                 /* assemble blocks of eeprom pages */
                 uint32_t currAddr = memStart;
-                result = MLX_OK;
-                while ((currAddr < memEnd) && (result == MLX_OK)) {
+                result = PPM_OK;
+                while ((currAddr < memEnd) && (result == PPM_OK)) {
                     bool inBlock = true;
                     uint16_t currLen = 0u;
                     uint16_t currOff = currAddr - memStart;
@@ -457,7 +455,7 @@ static mlx_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexCont
                         ppm_session_config_t session_cfg = PPM_SESSION_EEPROM_CRC_DEFAULT;
                         if ((ppmsession_doEepromCrc(&session_cfg, currOff, currLen, &chip_crc) != ESP_OK) ||
                             (chip_crc != hex_crc)) {
-                            result = MLX_FAIL_BTL_VERIFY_FAILED;
+                            result = PPM_FAIL_VERIFY_FAILED;
                         }
                     }
                 }
@@ -468,8 +466,8 @@ static mlx_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexCont
     return result;
 }
 
-static mlx_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, bool broadcast) {
-    mlx_err_t result = MLX_FAIL_UNKNOWN;
+static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, bool broadcast) {
+    ppm_err_t result = PPM_FAIL_UNKNOWN;
 
     if ((chip_info->bootloaders.ppm_loader != NULL) &&
         (chip_info->bootloaders.ppm_loader->prog_keys != NULL)) {
@@ -478,7 +476,7 @@ static mlx_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, b
         if (ppmsession_doFlashProgKeys(&prog_keys_cfg,
                                        chip_info->bootloaders.ppm_loader->prog_keys->values,
                                        chip_info->bootloaders.ppm_loader->prog_keys->length) == ESP_OK) {
-            result = MLX_OK;
+            result = PPM_OK;
         }
     }
 
@@ -493,13 +491,13 @@ void ppmbtl_init(void) {
     ESP_ERROR_CHECK(rmt_ppm_init(&cfg));
 }
 
-mlx_err_t ppmbtl_doAction(bool manpow,
+ppm_err_t ppmbtl_doAction(bool manpow,
                           bool broadcast,
                           uint32_t bitrate,
                           btl_memory_t memory,
                           btl_action_t action,
                           ihexContainer_t * ihex) {
-    mlx_err_t retval = MLX_FAIL_UNKNOWN;
+    ppm_err_t retval = PPM_FAIL_UNKNOWN;
 
     if (ihex != NULL) {
         uint32_t pattern_time = 50000u;
@@ -513,7 +511,7 @@ mlx_err_t ppmbtl_doAction(bool manpow,
         const MlxChip_t * chip_info = NULL;
         retval = ppmbtl_enterProgrammingMode(broadcast, bitrate, pattern_time, &chip_info);
 
-        if ((retval == MLX_OK) && (chip_info != NULL)) {
+        if ((retval == PPM_OK) && (chip_info != NULL)) {
             if (memory == MEM_FLASH) {
                 if (action == ACT_PROGRAM) {
                     retval = ppmbtl_programFlashMemory(chip_info, broadcast, ihex);
@@ -528,7 +526,7 @@ mlx_err_t ppmbtl_doAction(bool manpow,
                         retval = ppmbtl_verifyFlashCsMemory(chip_info, ihex);
                     }
                 } else {
-                    retval = MLX_FAIL_BTL_ACTION_NOT_SUPPORTED;
+                    retval = PPM_FAIL_ACTION_NOT_SUPPORTED;
                 }
             } else if (memory == MEM_NVRAM) {
                 if (action == ACT_PROGRAM) {
@@ -537,7 +535,7 @@ mlx_err_t ppmbtl_doAction(bool manpow,
                     if (chip_info->bootloaders.ppm_loader->eeprom_verification_session) {
                         retval = ppmbtl_verifyEepromMemory(chip_info, ihex);
                     } else {
-                        retval = MLX_FAIL_BTL_ACTION_NOT_SUPPORTED;
+                        retval = PPM_FAIL_ACTION_NOT_SUPPORTED;
                     }
                 }
             }
@@ -549,7 +547,7 @@ mlx_err_t ppmbtl_doAction(bool manpow,
             ppmbtl_chipPower(false);
         }
     } else {
-        retval = MLX_FAIL_BTL_INV_HEX_FILE;
+        retval = PPM_FAIL_INV_HEX_FILE;
     }
 
     return retval;
