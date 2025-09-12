@@ -24,6 +24,7 @@
  * @details Implementations of the RMT PPM frame transmitter.
  */
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -39,7 +40,7 @@
 #include "sdkconfig.h"
 
 #include "rmt_ppm_encoder.h"
-#include "sl_pwr_ctrl.h"
+#include "ppm_bootloader.h"
 
 #include "rmt_ppm.h"
 
@@ -436,7 +437,7 @@ esp_err_t rmt_ppm_send_enter_ppm_pattern(uint32_t pattern_time) {
         return ESP_FAIL;
     }
 
-    slpwrctrl_enable();
+    ppmbtl_chipPower(true);
 
     /* Wait for TX done via callback semaphore */
     if (xSemaphoreTake(tx_done_sem, portMAX_DELAY) != pdTRUE) {

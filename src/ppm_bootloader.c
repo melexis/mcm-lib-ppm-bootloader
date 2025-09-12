@@ -38,7 +38,6 @@
 #include "mlx_err.h"
 #include "ppm_session.h"
 #include "rmt_ppm.h"
-#include "sl_pwr_ctrl.h"
 
 #include "ppm_bootloader.h"
 
@@ -506,8 +505,8 @@ mlx_err_t ppmbtl_doAction(bool manpow,
         uint32_t pattern_time = 50000u;
         if (manpow) {
             pattern_time = 100000u;
-        } else if (slpwrctrl_enabled()) {
-            slpwrctrl_disable();
+        } else if (ppmbtl_chipPowered()) {
+            ppmbtl_chipPower(false);
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
 
@@ -547,11 +546,19 @@ mlx_err_t ppmbtl_doAction(bool manpow,
         (void)ppmbtl_exitProgrammingMode(chip_info, broadcast);
 
         if (!manpow) {
-            slpwrctrl_disable();
+            ppmbtl_chipPower(false);
         }
     } else {
         retval = MLX_FAIL_BTL_INV_HEX_FILE;
     }
 
     return retval;
+}
+
+void __attribute__((weak)) ppmbtl_chipPower(bool enable) {
+    (void)enable;
+}
+
+bool __attribute__((weak)) ppmbtl_chipPowered(void) {
+    return false;
 }

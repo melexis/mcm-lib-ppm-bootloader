@@ -82,11 +82,11 @@ typedef enum session_id_e {
     PPM_SESSION_CHIP_RESET = 0x45u,     /**< chip reset session id */
     PPM_SESSION_EEPROM_CRC = 0x47u,     /**< eeprom crc session id */
     PPM_SESSION_FLASH_CS_CRC = 0x48u,   /**< flash cs crc session id */
-} session_id_t;                         /**< ppm session id type */
+} ppm_session_id_t;                     /**< ppm session id type */
 
 /** ppm session configuration structure */
 typedef struct ppm_session_s {
-    session_id_t session_id;            /**< session type identifier (0x00..0x7F) */
+    ppm_session_id_t session_id;        /**< session type identifier (0x00..0x7F) */
     uint8_t page_size;                  /**< page size (in words) of this session's pages (0x00..0xFF) */
     bool request_ack;                   /**< request an acknowledge from the slave (default enabled) */
     uint8_t page_retry;                 /**< number of page retries which are allowed */

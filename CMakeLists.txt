@@ -11,5 +11,4 @@ idf_component_register(
              intelhex
              mlx_crc
     PRIV_REQUIRES mlx_chip
-                  slave_power
 )

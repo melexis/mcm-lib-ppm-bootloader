@@ -56,6 +56,19 @@ mlx_err_t ppmbtl_doAction(bool manpow,
                           btl_action_t action,
                           ihexContainer_t * ihex);
 
+/** library callout to en/disable the chip power
+ *
+ * @param[in]  enable  whether to enable the chip power.
+ */
+void ppmbtl_chipPower(bool enable);
+
+/** library callout to check whether the chip is powered
+ *
+ * @retval  true  chip is currently powered.
+ * @retval  false  otherwise
+ */
+bool ppmbtl_chipPowered(void);
+
 #ifdef __cplusplus
 }
 #endif
