@@ -32,7 +32,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "gen_bootloader.h"
 #include "intelhex.h"
 #include "mlx_chip.h"
 #include "mlx_crc.h"
@@ -496,8 +495,8 @@ void ppmbtl_init(void) {
 ppm_err_t ppmbtl_doAction(bool manpow,
                           bool broadcast,
                           uint32_t bitrate,
-                          btl_memory_t memory,
-                          btl_action_t action,
+                          ppm_memory_t memory,
+                          ppm_action_t action,
                           ihexContainer_t * ihex) {
     ppm_err_t retval = PPM_FAIL_UNKNOWN;
 
@@ -514,26 +513,26 @@ ppm_err_t ppmbtl_doAction(bool manpow,
         retval = ppmbtl_enterProgrammingMode(broadcast, bitrate, pattern_time, &chip_info);
 
         if ((retval == PPM_OK) && (chip_info != NULL)) {
-            if (memory == MEM_FLASH) {
-                if (action == ACT_PROGRAM) {
+            if (memory == PPM_MEM_FLASH) {
+                if (action == PPM_ACT_PROGRAM) {
                     retval = ppmbtl_programFlashMemory(chip_info, broadcast, ihex);
-                } else if (action == ACT_VERIFY) {
+                } else if (action == PPM_ACT_VERIFY) {
                     retval = ppmbtl_verifyFlashMemory(chip_info, ihex);
                 }
-            } else if (memory == MEM_FLASH_CS) {
+            } else if (memory == PPM_MEM_FLASH_CS) {
                 if (chip_info->bootloaders.ppm_loader->flash_cs_programming_session) {
-                    if (action == ACT_PROGRAM) {
+                    if (action == PPM_ACT_PROGRAM) {
                         retval = ppmbtl_programFlashCsMemory(chip_info, broadcast, ihex);
-                    } else if (action == ACT_VERIFY) {
+                    } else if (action == PPM_ACT_VERIFY) {
                         retval = ppmbtl_verifyFlashCsMemory(chip_info, ihex);
                     }
                 } else {
                     retval = PPM_FAIL_ACTION_NOT_SUPPORTED;
                 }
-            } else if (memory == MEM_NVRAM) {
-                if (action == ACT_PROGRAM) {
+            } else if (memory == PPM_MEM_NVRAM) {
+                if (action == PPM_ACT_PROGRAM) {
                     retval = ppmbtl_programEepromMemory(chip_info, broadcast, ihex);
-                } else if (action == ACT_VERIFY) {
+                } else if (action == PPM_ACT_VERIFY) {
                     if (chip_info->bootloaders.ppm_loader->eeprom_verification_session) {
                         retval = ppmbtl_verifyEepromMemory(chip_info, ihex);
                     } else {

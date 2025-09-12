@@ -96,6 +96,21 @@ typedef struct ppm_session_s {
     flash_crc_func_t crc_func;          /**< memory crc calculation method */
 } ppm_session_config_t;                 /**< ppm session configuration type */
 
+/** ppm memory types enum */
+typedef enum ppm_memory_e {
+    PPM_MEM_NVRAM = 0,                  /**< non volatile memory */
+    PPM_MEM_FLASH,                      /**< flash memory */
+    PPM_MEM_FLASH_CS,                   /**< flash configuration memory */
+    PPM_MEM_INVALID = 255               /**< invalid memory */
+} ppm_memory_t;                         /**< ppm memory type */
+
+/** ppm action types enum */
+typedef enum ppm_action_e {
+    PPM_ACT_PROGRAM = 0,                /**< program memory */
+    PPM_ACT_VERIFY,                     /**< verify memory */
+    PPM_ACT_INVALID = 255               /**< invalid action */
+} ppm_action_t;                         /**< ppm action type */
+
 #ifdef __cplusplus
 }
 #endif

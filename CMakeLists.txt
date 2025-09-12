@@ -7,7 +7,6 @@ idf_component_register(
     PRIV_INCLUDE_DIRS "src"
     REQUIRES driver
              esp_driver_rmt
-             gen_bootloader
              intelhex
              mlx_crc
     PRIV_REQUIRES mlx_chip

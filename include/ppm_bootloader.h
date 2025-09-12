@@ -28,10 +28,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "gen_bootloader.h"
 #include "intelhex.h"
 
 #include "ppm_err.h"
+#include "ppm_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,8 +53,8 @@ void ppmbtl_init(void);
 ppm_err_t ppmbtl_doAction(bool manpow,
                           bool broadcast,
                           uint32_t bitrate,
-                          btl_memory_t memory,
-                          btl_action_t action,
+                          ppm_memory_t memory,
+                          ppm_action_t action,
                           ihexContainer_t * ihex);
 
 /** library callout to en/disable the chip power
