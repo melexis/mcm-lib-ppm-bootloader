@@ -37,8 +37,6 @@
 #include "freertos/queue.h"
 #include "freertos/task.h"
 
-#include "sdkconfig.h"
-
 #include "rmt_ppm_encoder.h"
 #include "ppm_bootloader.h"
 

@@ -32,9 +32,10 @@
 #include "freertos/task.h"
 
 #include "mlx_crc.h"
-#include "rmt_ppm.h"
 
+#include "rmt_ppm.h"
 #include "ppm_types.h"
+
 #include "ppm_session.h"
 
 static const char *TAG = "ppm_session";
