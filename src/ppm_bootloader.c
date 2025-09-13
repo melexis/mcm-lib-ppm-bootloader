@@ -29,6 +29,8 @@
 
 #include "sdkconfig.h"
 
+#include "esp_err.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -490,6 +492,14 @@ void ppmbtl_init(void) {
         .rx_gpio_num = CONFIG_PPM_BOOTLOADER_RX,
     };
     ESP_ERROR_CHECK(rmt_ppm_init(&cfg));
+}
+
+esp_err_t ppmbtl_enable(void) {
+    return ESP_OK;
+}
+
+esp_err_t ppmbtl_disable(void) {
+    return ESP_OK;
 }
 
 ppm_err_t ppmbtl_doAction(bool manpow,

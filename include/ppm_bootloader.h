@@ -28,6 +28,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "esp_err.h"
+
 #include "intelhex.h"
 
 #include "ppm_err.h"
@@ -39,6 +41,18 @@ extern "C" {
 
 /** initialize the PPM bootloader module */
 void ppmbtl_init(void);
+
+/** enable the ppm interface
+ *
+ * @returns  error code representing the result of the action.
+ */
+esp_err_t ppmbtl_enable(void);
+
+/** disable the ppm interface
+ *
+ * @returns  error code representing the result of the action.
+ */
+esp_err_t ppmbtl_disable(void);
 
 /** perform a full programming/verification action to the connected chip
  *
