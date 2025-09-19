@@ -44,7 +44,7 @@ extern "C" {
             .page_retry = 5u, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = NULL, \
 }
 
@@ -56,7 +56,7 @@ extern "C" {
             .page_retry = 1u, \
             .page0_ack_timeout = 25u, \
             .pageX_ack_timeout = 10u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = NULL, \
 }
 
@@ -68,7 +68,7 @@ extern "C" {
             .page_retry = 5u, \
             .page0_ack_timeout = 100u, \
             .pageX_ack_timeout = 10u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = crc_calc24bitCrc, \
 }
 
@@ -80,7 +80,7 @@ extern "C" {
             .page_retry = 5u, \
             .page0_ack_timeout = 100u, \
             .pageX_ack_timeout = 10u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = crc_calcGanyXfeCrc, \
 }
 
@@ -92,7 +92,7 @@ extern "C" {
             .page_retry = 5u, \
             .page0_ack_timeout = 100u, \
             .pageX_ack_timeout = 10u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = crc_calcGanyKfCrc, \
 }
 
@@ -116,7 +116,7 @@ extern "C" {
             .page_retry = 5u, \
             .page0_ack_timeout = 8u, \
             .pageX_ack_timeout = 8u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = NULL, \
 }
 
@@ -188,7 +188,7 @@ extern "C" {
             .page_retry = 5u, \
             .pageX_ack_timeout = 0u, \
             .page0_ack_timeout = 0u, \
-            .session_ack_timeout = 10u, \
+            .session_ack_timeout = 15u, \
             .crc_func = NULL, \
 }
 

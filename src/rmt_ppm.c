@@ -128,7 +128,9 @@ static esp_err_t rmt_ppm_reconfigure_tx(uint32_t resolution_hz) {
         .mem_block_symbols = 64,
         .trans_queue_depth = 4,
         .flags.with_dma = true,
+#if (CONFIG_PPM_BOOTLOADER_TX_INVERT)
         .flags.invert_out = true,
+#endif
     };
 
     if (tx_gpio_num == rx_gpio_num) {

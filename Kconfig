@@ -16,4 +16,10 @@ menu "MCM - PPM Bootloader Configuration"
         help
             GPIO number for PPM Bootloader TX pin.
 
+    config PPM_BOOTLOADER_TX_INVERT
+        bool "invert TX signal"
+        default y
+        help
+            Whether or not to invert the TX signal.
+
 endmenu
