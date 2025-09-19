@@ -25,7 +25,7 @@
 const struct {
     ppm_err_t code;
     const char *name;
-} errorCodesDict[] = {
+} ppmErrorCodesDict[] = {
     {PPM_OK, "operation was successful"},
     {PPM_FAIL_UNKNOWN, "unknown error"},
     {PPM_FAIL_INTERNAL, "internal error"},
@@ -44,9 +44,9 @@ const struct {
 const char *ppmerr_ErrorCodeToName(ppm_err_t code) {
     size_t i;
 
-    for (i = 0; i < sizeof(errorCodesDict) / sizeof(errorCodesDict[0]); ++i) {
-        if (errorCodesDict[i].code == code) {
-            return errorCodesDict[i].name;
+    for (i = 0; i < sizeof(ppmErrorCodesDict) / sizeof(ppmErrorCodesDict[0]); ++i) {
+        if (ppmErrorCodesDict[i].code == code) {
+            return ppmErrorCodesDict[i].name;
         }
     }
 
