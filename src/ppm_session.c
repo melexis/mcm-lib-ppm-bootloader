@@ -173,7 +173,7 @@ static esp_err_t send_page_frame(uint8_t sequence_number,
         uint16_t * page_frame = (uint16_t*)calloc(1u + data_length, sizeof(uint16_t));
         if (page_frame != NULL) {
             page_frame[0] = (((uint16_t)sequence_number) << 8) | ((uint16_t)page_checksum);
-            memcpy(&page_frame[1], &data_words[0], data_length);
+            memcpy(&page_frame[1], &data_words[0], data_length * sizeof(uint16_t));
 
             /* send the frame and wait for the response (first response is the TX message to verify) */
             result = rmt_ppm_send_frame(ftPage, page_frame, 1u + data_length);
@@ -239,13 +239,17 @@ static size_t handle_session(const ppm_session_config_t * config,
             if (page_data_words != NULL) {
                 for (uint16_t seqnr = 0u; seqnr < page_count; seqnr++) {
                     /* get the relevant data words for this page frame */
-                    memcpy(&page_data_words[0], &page_data[seqnr * config->page_size], config->page_size);
+                    memcpy(&page_data_words[0],
+                           &page_data[seqnr * config->page_size],
+                           config->page_size * sizeof(uint16_t));
                     uint16_t page_checksum = crc_calcPageChecksum(page_data_words, config->page_size);
 
                     blPageSuccess = false;
 
                     for (uint16_t retry = 0u; retry < config->page_retry; retry++) {
-                        if (send_page_frame(seqnr & 0xFFu, page_checksum, page_data_words,
+                        if (send_page_frame(seqnr & 0xFFu,
+                                            page_checksum,
+                                            page_data_words,
                                             config->page_size) == ESP_OK) {
                             uint16_t page_frame_timeout;
 
