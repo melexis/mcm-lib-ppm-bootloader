@@ -138,7 +138,7 @@ extern "C" {
 /** EEPROM CRC PPM session default configuration */
 #define PPM_SESSION_EEPROM_CRC_DEFAULT { \
             .session_id = PPM_SESSION_EEPROM_CRC, \
-            .page_size = 0u, \
+            .page_size = 4u, \
             .request_ack = true, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \

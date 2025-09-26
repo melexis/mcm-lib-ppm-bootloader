@@ -249,6 +249,7 @@ static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
                 uint32_t chip_crc;
 
                 ppm_session_config_t session_cfg = PPM_SESSION_FLASH_CRC_DEFAULT;
+                session_cfg.page_size = chip_info->memories.flash->page / sizeof(uint16_t);
                 session_cfg.session_ack_timeout = (uint16_t)(memLen * 0.0000625);
                 if ((ppmsession_doFlashCrc(&session_cfg, memLen, &chip_crc) != ESP_OK) || (chip_crc != hex_crc)) {
                     result = PPM_FAIL_VERIFY_FAILED;
@@ -297,7 +298,7 @@ static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
                     session_cfg.page0_ack_timeout = (uint16_t)(memLen / chip_info->memories.flash_cs->page *
                                                                chip_info->memories.flash_cs->erase_time * 1.25);
                     session_cfg.pageX_ack_timeout = (uint16_t)(chip_info->memories.flash_cs->write_time * 1.25);
-                    session_cfg.session_ack_timeout = (uint16_t)(memLen * 0.0000625);
+                    session_cfg.session_ack_timeout = session_cfg.pageX_ack_timeout + (uint16_t)(memLen * 0.0000625);
                     if (ppmsession_doFlashCsProgramming(&session_cfg, &content[0], memLen) != PPM_OK) {
                         result = PPM_FAIL_PROGRAMMING_FAILED;
                     }
@@ -336,9 +337,10 @@ static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
             } else {
                 (void)intelhex_getFilled(ihex, memStart, (uint8_t*)content, memLen);
 
-                uint16_t hex_crc = crc_calc16bitCrc(&content[0], memLen, 1u);
+                uint16_t hex_crc = crc_calc16bitCrc(&content[0], memLen, 0x1D0Fu);
                 uint16_t chip_crc;
                 ppm_session_config_t session_cfg = PPM_SESSION_FLASH_CS_CRC_DEFAULT;
+                session_cfg.page_size = chip_info->memories.flash_cs->page / sizeof(uint16_t);
                 if ((ppmsession_doFlashCsCrc(&session_cfg, memLen, &chip_crc) != ESP_OK) || (chip_crc != hex_crc)) {
                     result = PPM_FAIL_VERIFY_FAILED;
                 } else {
@@ -398,6 +400,7 @@ static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool br
                                                                        1.25);
                             session_cfg.pageX_ack_timeout = (uint16_t)(chip_info->memories.nv_memory->write_time *
                                                                        1.25);
+                            session_cfg.session_ack_timeout = session_cfg.pageX_ack_timeout;
                             if (ppmsession_doEepromProgramming(&session_cfg,
                                                                currOff,
                                                                &content[0],
@@ -453,9 +456,10 @@ static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexCont
                     }
                     if (currLen > 0) {
                         /* perform eeprom crc session */
-                        uint16_t hex_crc = crc_calc16bitCrc(&content[0], currLen, 1u);
+                        uint16_t hex_crc = crc_calc16bitCrc(&content[0], currLen, 0x1D0Fu);
                         uint16_t chip_crc;
                         ppm_session_config_t session_cfg = PPM_SESSION_EEPROM_CRC_DEFAULT;
+                        session_cfg.page_size = chip_info->memories.nv_memory->page / sizeof(uint16_t);
                         if ((ppmsession_doEepromCrc(&session_cfg, currOff, currLen, &chip_crc) != ESP_OK) ||
                             (chip_crc != hex_crc)) {
                             result = PPM_FAIL_VERIFY_FAILED;
