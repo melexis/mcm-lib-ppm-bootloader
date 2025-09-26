@@ -89,7 +89,6 @@ typedef struct ppm_session_s {
     ppm_session_id_t session_id;        /**< session type identifier (0x00..0x7F) */
     uint8_t page_size;                  /**< page size (in words) of this session's pages (0x00..0xFF) */
     bool request_ack;                   /**< request an acknowledge from the slave (default enabled) */
-    uint8_t page_retry;                 /**< number of page retries which are allowed */
     uint16_t pageX_ack_timeout;         /**< page acknowledge timeout (ms) */
     uint16_t page0_ack_timeout;         /**< first page acknowledge timeout (ms) */
     uint16_t session_ack_timeout;       /**< session acknowledge timeout (ms) */

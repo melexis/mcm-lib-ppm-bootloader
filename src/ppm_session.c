@@ -246,47 +246,40 @@ static size_t handle_session(const ppm_session_config_t * config,
 
                     blPageSuccess = false;
 
-                    for (uint16_t retry = 0u; retry < config->page_retry; retry++) {
-                        if (send_page_frame(seqnr & 0xFFu,
-                                            page_checksum,
-                                            page_data_words,
-                                            config->page_size) == ESP_OK) {
-                            uint16_t page_frame_timeout;
+                    if (send_page_frame(seqnr & 0xFFu,
+                                        page_checksum,
+                                        page_data_words,
+                                        config->page_size) == ESP_OK) {
+                        uint16_t page_frame_timeout;
 
-                            if (seqnr == 0u) {
-                                page_frame_timeout = config->page0_ack_timeout;
-                            } else {
-                                page_frame_timeout = config->pageX_ack_timeout;
-                            }
+                        if (seqnr == 0u) {
+                            page_frame_timeout = config->page0_ack_timeout;
+                        } else {
+                            page_frame_timeout = config->pageX_ack_timeout;
+                        }
 
-                            if (config->request_ack == false) {
-                                /* wait for fixed time for write/erase to be done */
-                                vTaskDelay(page_frame_timeout / portTICK_PERIOD_MS);
+                        if (config->request_ack == false) {
+                            /* wait for fixed time for write/erase to be done */
+                            vTaskDelay(page_frame_timeout / portTICK_PERIOD_MS);
 
-                                blPageSuccess = true;
-                                break;
-                            } else {
-                                /* wait for page ack */
-                                uint16_t * resp_data = NULL;
-                                uint16_t resp_len = receive_page_ack(&resp_data, page_frame_timeout);
+                            blPageSuccess = true;
+                        } else {
+                            /* wait for page ack */
+                            uint16_t * resp_data = NULL;
+                            uint16_t resp_len = receive_page_ack(&resp_data, page_frame_timeout);
 
-                                if ((resp_data != NULL) && (resp_len > 0u)) {
-                                    if (resp_data[0] == (((seqnr & 0xFFu) << 8) | (page_checksum & 0xFFu))) {
-                                        blPageSuccess = true;
-                                    }
-                                }
-
-                                free(resp_data);
-
-                                if (blPageSuccess == true) {
-                                    break;
+                            if ((resp_data != NULL) && (resp_len > 0u)) {
+                                if (resp_data[0] == (((seqnr & 0xFFu) << 8) | (page_checksum & 0xFFu))) {
+                                    blPageSuccess = true;
                                 }
                             }
+
+                            free(resp_data);
                         }
                     }
 
                     if (blPageSuccess == false) {
-                        ESP_LOGE(TAG, "page programming failed after retries");
+                        ESP_LOGE(TAG, "page programming failed");
                         break;
                     }
                 }

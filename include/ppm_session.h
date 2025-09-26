@@ -41,7 +41,6 @@ extern "C" {
             .session_id = PPM_SESSION_UNLOCK, \
             .page_size = 0u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
             .session_ack_timeout = 15u, \
@@ -53,7 +52,6 @@ extern "C" {
             .session_id = PPM_SESSION_PROG_KEYS, \
             .page_size = 8u, \
             .request_ack = true, \
-            .page_retry = 1u, \
             .page0_ack_timeout = 25u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 15u, \
@@ -65,7 +63,6 @@ extern "C" {
             .session_id = PPM_SESSION_FLASH_PROG, \
             .page_size = 64u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 100u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 15u, \
@@ -77,7 +74,6 @@ extern "C" {
             .session_id = PPM_SESSION_FLASH_PROG, \
             .page_size = 64u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 100u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 15u, \
@@ -89,7 +85,6 @@ extern "C" {
             .session_id = PPM_SESSION_FLASH_PROG, \
             .page_size = 64u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 100u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 15u, \
@@ -101,7 +96,6 @@ extern "C" {
             .session_id = PPM_SESSION_EEPROM_PROG, \
             .page_size = 4u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 15u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 20u, \
@@ -113,7 +107,6 @@ extern "C" {
             .session_id = PPM_SESSION_EEPROM_PROG, \
             .page_size = 64u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 15u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 15u, \
@@ -125,7 +118,6 @@ extern "C" {
             .session_id = PPM_SESSION_FLASH_CS_PROG, \
             .page_size = 64u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 50u, \
             .pageX_ack_timeout = 15u, \
             .session_ack_timeout = 15u, \
@@ -137,7 +129,6 @@ extern "C" {
             .session_id = PPM_SESSION_FLASH_CRC, \
             .page_size = 0u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
             .session_ack_timeout = 15u, \
@@ -149,7 +140,6 @@ extern "C" {
             .session_id = PPM_SESSION_EEPROM_CRC, \
             .page_size = 0u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
             .session_ack_timeout = 15u, \
@@ -161,7 +151,6 @@ extern "C" {
             .session_id = PPM_SESSION_EEPROM_CRC, \
             .page_size = 0u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
             .session_ack_timeout = 15u, \
@@ -173,7 +162,6 @@ extern "C" {
             .session_id = PPM_SESSION_FLASH_CS_CRC, \
             .page_size = 0u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .pageX_ack_timeout = 0u, \
             .page0_ack_timeout = 0u, \
             .session_ack_timeout = 15u, \
@@ -185,7 +173,6 @@ extern "C" {
             .session_id = PPM_SESSION_CHIP_RESET, \
             .page_size = 0u, \
             .request_ack = true, \
-            .page_retry = 5u, \
             .pageX_ack_timeout = 0u, \
             .page0_ack_timeout = 0u, \
             .session_ack_timeout = 15u, \
