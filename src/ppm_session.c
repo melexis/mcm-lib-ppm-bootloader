@@ -234,6 +234,9 @@ static size_t handle_session(const ppm_session_config_t * config,
         bool blPageSuccess = true;
 
         if ((page_data != NULL) && (page_count != 0u)) {
+            /* older chips need some more time between session and page frames */
+            esp_rom_delay_us(200);
+
             /* handle all page frames */
             uint16_t * page_data_words = (uint16_t*)calloc(config->page_size, sizeof(uint16_t));
             if (page_data_words != NULL) {
