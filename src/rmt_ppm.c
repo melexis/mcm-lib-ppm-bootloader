@@ -512,13 +512,12 @@ size_t rmt_ppm_wait_for_response_frame(ppm_frame_type_t * type, uint16_t ** data
         return 0;
     }
 
-    if (bus_timeout < 10u) {
-        bus_timeout = 10u;
-    }
+    /* round up to multiple of portTICK_PERIOD_MS (add 1 for margin) */
+    uint16_t timeout = ((bus_timeout + portTICK_PERIOD_MS - 1) / portTICK_PERIOD_MS) + 1;
 
     size_t retval = 0;
     ppm_tx_item_t item;
-    if (xQueueReceive(rx_queue, &item, bus_timeout / portTICK_PERIOD_MS) == pdTRUE) {
+    if (xQueueReceive(rx_queue, &item, timeout) == pdTRUE) {
         *type = item.type;
         retval = item.frame.data_len / 2;
         uint16_t * buffer = calloc(retval, sizeof(uint16_t));
