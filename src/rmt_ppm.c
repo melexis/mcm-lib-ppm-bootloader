@@ -512,6 +512,10 @@ size_t rmt_ppm_wait_for_response_frame(ppm_frame_type_t * type, uint16_t ** data
         return 0;
     }
 
+    if (bus_timeout < 10u) {
+        bus_timeout = 10u;
+    }
+
     size_t retval = 0;
     ppm_tx_item_t item;
     if (xQueueReceive(rx_queue, &item, bus_timeout / portTICK_PERIOD_MS) == pdTRUE) {
