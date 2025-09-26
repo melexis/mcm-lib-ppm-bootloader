@@ -211,7 +211,7 @@ static esp_err_t ppm_decode_symbols(const rmt_symbol_word_t *symbols, size_t sym
             break;
         }
 
-        uint8_t val = (uint8_t)((total_time - (uint32_t)(4.5 * 4)) / PPM_BIT_DISTANCE);
+        uint8_t val = (uint8_t)(((total_time - (uint32_t)(4.5 * 4)) + PPM_BIT_DISTANCE / 2) / PPM_BIT_DISTANCE);
 
         current_byte = (current_byte << 2) | (val & 0x03);
         bits_filled += 2;
