@@ -43,7 +43,7 @@ extern "C" {
             .request_ack = true, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
-            .session_ack_timeout = 15u, \
+            .session_ack_timeout = 10u, \
             .crc_func = NULL, \
 }
 
@@ -53,8 +53,8 @@ extern "C" {
             .page_size = 8u, \
             .request_ack = true, \
             .page0_ack_timeout = 25u, \
-            .pageX_ack_timeout = 15u, \
-            .session_ack_timeout = 15u, \
+            .pageX_ack_timeout = 10u, \
+            .session_ack_timeout = 10u, \
             .crc_func = NULL, \
 }
 
@@ -64,8 +64,8 @@ extern "C" {
             .page_size = 64u, \
             .request_ack = true, \
             .page0_ack_timeout = 100u, \
-            .pageX_ack_timeout = 15u, \
-            .session_ack_timeout = 15u, \
+            .pageX_ack_timeout = 10u, \
+            .session_ack_timeout = 10u, \
             .crc_func = crc_calc24bitCrc, \
 }
 
@@ -75,8 +75,8 @@ extern "C" {
             .page_size = 64u, \
             .request_ack = true, \
             .page0_ack_timeout = 100u, \
-            .pageX_ack_timeout = 15u, \
-            .session_ack_timeout = 15u, \
+            .pageX_ack_timeout = 10u, \
+            .session_ack_timeout = 10u, \
             .crc_func = crc_calcGanyXfeCrc, \
 }
 
@@ -86,8 +86,8 @@ extern "C" {
             .page_size = 64u, \
             .request_ack = true, \
             .page0_ack_timeout = 100u, \
-            .pageX_ack_timeout = 15u, \
-            .session_ack_timeout = 15u, \
+            .pageX_ack_timeout = 10u, \
+            .session_ack_timeout = 10u, \
             .crc_func = crc_calcGanyKfCrc, \
 }
 
@@ -98,7 +98,7 @@ extern "C" {
             .request_ack = true, \
             .page0_ack_timeout = 15u, \
             .pageX_ack_timeout = 15u, \
-            .session_ack_timeout = 20u, \
+            .session_ack_timeout = 17u, \
             .crc_func = NULL, \
 }
 
@@ -107,9 +107,9 @@ extern "C" {
             .session_id = PPM_SESSION_EEPROM_PROG, \
             .page_size = 64u, \
             .request_ack = true, \
-            .page0_ack_timeout = 15u, \
-            .pageX_ack_timeout = 15u, \
-            .session_ack_timeout = 15u, \
+            .page0_ack_timeout = 8u, \
+            .pageX_ack_timeout = 8u, \
+            .session_ack_timeout = 10u, \
             .crc_func = NULL, \
 }
 
@@ -119,7 +119,7 @@ extern "C" {
             .page_size = 64u, \
             .request_ack = true, \
             .page0_ack_timeout = 50u, \
-            .pageX_ack_timeout = 15u, \
+            .pageX_ack_timeout = 7u, \
             .session_ack_timeout = 15u, \
             .crc_func = NULL, \
 }
@@ -131,18 +131,18 @@ extern "C" {
             .request_ack = true, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
-            .session_ack_timeout = 15u, \
+            .session_ack_timeout = 5u, \
             .crc_func = NULL, \
 }
 
 /** EEPROM CRC PPM session default configuration */
 #define PPM_SESSION_EEPROM_CRC_DEFAULT { \
             .session_id = PPM_SESSION_EEPROM_CRC, \
-            .page_size = 4u, \
+            .page_size = 0u, \
             .request_ack = true, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
-            .session_ack_timeout = 15u, \
+            .session_ack_timeout = 5u, \
             .crc_func = NULL, \
 }
 
@@ -153,7 +153,7 @@ extern "C" {
             .request_ack = true, \
             .page0_ack_timeout = 0u, \
             .pageX_ack_timeout = 0u, \
-            .session_ack_timeout = 15u, \
+            .session_ack_timeout = 8u, \
             .crc_func = NULL, \
 }
 
@@ -164,7 +164,7 @@ extern "C" {
             .request_ack = true, \
             .pageX_ack_timeout = 0u, \
             .page0_ack_timeout = 0u, \
-            .session_ack_timeout = 15u, \
+            .session_ack_timeout = 5u, \
             .crc_func = NULL, \
 }
 
@@ -175,7 +175,7 @@ extern "C" {
             .request_ack = true, \
             .pageX_ack_timeout = 0u, \
             .page0_ack_timeout = 0u, \
-            .session_ack_timeout = 15u, \
+            .session_ack_timeout = 10u, \
             .crc_func = NULL, \
 }
 
