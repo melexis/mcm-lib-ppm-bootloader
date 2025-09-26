@@ -214,7 +214,7 @@ static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool bro
                     session_cfg.page0_ack_timeout = (uint16_t)(memLen / chip_info->memories.flash->erase_unit *
                                                                chip_info->memories.flash->erase_time * 1.25);
                     session_cfg.pageX_ack_timeout = (uint16_t)(chip_info->memories.flash->write_time * 1.25);
-                    session_cfg.session_ack_timeout = (uint16_t)(memLen * 0.0000625);
+                    session_cfg.session_ack_timeout = session_cfg.pageX_ack_timeout + (uint16_t)(memLen * 0.0000625);
                     if (ppmsession_doFlashProgramming(&session_cfg, &content[0], memLen) != PPM_OK) {
                         result = PPM_FAIL_PROGRAMMING_FAILED;
                     }
