@@ -30,6 +30,7 @@
 #include "sdkconfig.h"
 
 #include "esp_err.h"
+#include "esp_log.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -43,6 +44,8 @@
 #include "rmt_ppm.h"
 
 #include "ppm_bootloader.h"
+
+static const char *TAG = "ppm_btl";
 
 
 /** Request the ic to enter into programming mode
@@ -161,6 +164,7 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
         }
 
         if (result == PPM_OK) {
+            ESP_LOGI(TAG, "Detected project id %i", project_id);
             *chip_info = mlxchip_getCamcuChip(project_id);
             if ((*chip_info != NULL) && ((*chip_info)->bootloaders.ppm_loader == NULL)) {
                 result = PPM_FAIL_CHIP_NOT_SUPPORTED;
