@@ -212,7 +212,8 @@ static esp_err_t ppm_decode_symbols(const rmt_symbol_word_t *symbols, size_t sym
             break;
         }
 
-        uint8_t val = (uint8_t)((total_time - (uint32_t)(4.5 * 4) + (uint32_t)(PPM_BIT_DISTANCE / 2.0)) / (uint32_t)PPM_BIT_DISTANCE);
+        uint8_t val = (uint8_t)((total_time - (uint32_t)(4.5 * 4) + (uint32_t)(PPM_BIT_DISTANCE / 2.0)) /
+                                (uint32_t)PPM_BIT_DISTANCE);
 
         if (val > 3) {
             ESP_EARLY_LOGE(TAG, "Invalid symbol timing: %d us => %d", (int)total_time, (int)val);
