@@ -57,6 +57,18 @@ esp_err_t rmt_ppm_init(const rmt_ppm_config_t *cfg);
  */
 esp_err_t rmt_ppm_deinit(void);
 
+/** Enable the RMT PPM module.
+ *
+ * @returns  error code representing the result of the action.
+ */
+esp_err_t rmt_ppm_enable(void);
+
+/** Disable the RMT PPM module.
+ *
+ * @returns  error code representing the result of the action.
+ */
+esp_err_t rmt_ppm_disable(void);
+
 /** Configure the average bitrate of the RMT PPM module.
  *
  * @param[in]  bitrate  bitrate to be applied from this calibration frame [bps].

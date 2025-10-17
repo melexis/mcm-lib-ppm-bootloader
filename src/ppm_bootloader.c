@@ -503,11 +503,11 @@ void ppmbtl_init(void) {
 }
 
 esp_err_t ppmbtl_enable(void) {
-    return ESP_OK;
+    return rmt_ppm_enable();
 }
 
 esp_err_t ppmbtl_disable(void) {
-    return ESP_OK;
+    return rmt_ppm_disable();
 }
 
 ppm_err_t ppmbtl_doAction(bool manpow,
