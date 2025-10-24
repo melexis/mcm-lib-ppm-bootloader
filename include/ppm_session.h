@@ -181,9 +181,6 @@ extern "C" {
 
 /** Send unlock session mode on the bus
  *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/blob/1.5/specification/ppm_bootloader.markdown#L194
- *
  * @param[in]  config  session configuration.
  * @param[out]  project_id  in case acknowledge request is enabled this will get the project ID of the slave.
  *
@@ -192,9 +189,6 @@ extern "C" {
 esp_err_t ppmsession_doUnlock(const ppm_session_config_t * config, uint16_t * project_id);
 
 /** Send flash programming keys session on the bus
- *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/blob/1.5/specification/ppm_bootloader.markdown#L219
  *
  * @param[in]  config  session configuration.
  * @param[in]  prog_keys  programming keys to transfer.
@@ -208,9 +202,6 @@ esp_err_t ppmsession_doFlashProgKeys(const ppm_session_config_t * config,
 
 /** Send a amalthea flash programming session
  *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/blob/1.5/specification/ppm_bootloader.markdown#L261
- *
  * @param[in]  config  session configuration.
  * @param[in]  flash_bytes  flash to upload (hex file content).
  * @param[in]  length  length of the flash to upload.
@@ -222,9 +213,6 @@ esp_err_t ppmsession_doFlashProgramming(const ppm_session_config_t * config,
                                         size_t length);
 
 /** Send an eeprom programming session
- *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/blob/1.5.2/specification/ppm_bootloader.markdown#eeprom-programming-session
  *
  * @param[in]  config  session configuration.
  * @param[in]  mem_offset  offset in the eeprom to start programming from (in bytes).
@@ -240,9 +228,6 @@ esp_err_t ppmsession_doEepromProgramming(const ppm_session_config_t * config,
 
 /** Send a flash cs programming session
  *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/-/blob/1.5/specification/ppm_bootloader.markdown#L296
- *
  * @param[in]  config  session configuration.
  * @param[in]  data_bytes  flash to upload (hex file content).
  * @param[in]  data_length  length of the flash cs to upload.
@@ -255,9 +240,6 @@ esp_err_t ppmsession_doFlashCsProgramming(const ppm_session_config_t * config,
 
 /** Send a flash crc session
  *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/blob/1.5.2/specification/ppm_bootloader.markdown#flash-crc-read-session
- *
  * @param[in]  config  session configuration.
  * @param[in]  length  number of bytes to calculate the crc for (calculation starts from flash address 0)(will be page aligned).
  * @param[out]  crc  chip calculated flash crc value (24-bit).
@@ -267,9 +249,6 @@ esp_err_t ppmsession_doFlashCsProgramming(const ppm_session_config_t * config,
 esp_err_t ppmsession_doFlashCrc(const ppm_session_config_t * config, size_t length, uint32_t * crc);
 
 /** Send an eeprom crc session
- *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/-/blob/1.7.1/specification/ppm_bootloader.markdown#eeprom-crc-read-session
  *
  * @param[in]  config  session configuration.
  * @param[in]  offset  number of bytes from the start of the memory to start calculating from (shall be page aligned).
@@ -285,9 +264,6 @@ esp_err_t ppmsession_doEepromCrc(const ppm_session_config_t * config,
 
 /** Send an Flash CS crc session
  *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/-/blob/1.8.0/specification/ppm_bootloader.markdown#flash-cs-crc-read-session
- *
  * @param[in]  config  session configuration.
  * @param[in]  length  number of bytes to calculate the crc for (shall be page aligned).
  * @param[out]  crc  chip calculated flash crc value (16-bit).
@@ -297,9 +273,6 @@ esp_err_t ppmsession_doEepromCrc(const ppm_session_config_t * config,
 esp_err_t ppmsession_doFlashCsCrc(const ppm_session_config_t * config, size_t length, uint16_t * crc);
 
 /** Send a chip reset session
- *
- * Send frame as defined in:
- * https://gitlab.melexis.com/bu-act/docu/ppm_bootloader/blob/1.5/specification/ppm_bootloader.markdown#L300
  *
  * @param[in]  config  session configuration.
  * @param[out]  project_id  in case acknowledge request is enabled this will get the project ID of the slave.

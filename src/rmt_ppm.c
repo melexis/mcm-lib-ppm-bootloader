@@ -125,8 +125,8 @@ static esp_err_t rmt_ppm_reconfigure_tx(uint32_t resolution_hz) {
         .gpio_num = tx_gpio_num,
         .clk_src = RMT_CLK_SRC_DEFAULT,
         .resolution_hz = resolution_hz,
-        .mem_block_symbols = 1536,
-        .trans_queue_depth = 1,
+        .mem_block_symbols = 64,
+        .trans_queue_depth = 4,
         .flags.with_dma = true,
 #if (CONFIG_PPM_BOOTLOADER_TX_INVERT)
         .flags.invert_out = true,
@@ -165,7 +165,7 @@ static esp_err_t rmt_ppm_reconfigure_rx(uint32_t resolution_hz) {
         .gpio_num = rx_gpio_num,
         .clk_src = RMT_CLK_SRC_DEFAULT,
         .resolution_hz = resolution_hz,
-        .mem_block_symbols = 256,
+        .mem_block_symbols = 64,
         .flags.with_dma = true,
         .flags.invert_in = true,
     };

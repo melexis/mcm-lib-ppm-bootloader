@@ -141,7 +141,7 @@ static uint16_t receive_session_ack(uint16_t ** rx_data, uint16_t bus_timeout) {
         rx_lenght = rmt_ppm_wait_for_response_frame(&type, rx_data, bus_timeout);
 
         if (*rx_data != NULL) {
-            /* apply "https://jira.melexis.com/jira/browse/MLX81332-77" workaround */
+            /* apply MLX81332-77 workaround */
             (*rx_data)[0] -= 1u;
         }
 
