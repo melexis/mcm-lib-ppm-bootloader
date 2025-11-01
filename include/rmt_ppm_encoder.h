@@ -22,6 +22,7 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the RMT PPM encoder module.
+ * @{
  */
 #pragma once
 
@@ -36,6 +37,8 @@ typedef struct {} rmt_ppm_encoder_config_t;
 
 esp_err_t rmt_ppm_encoder_new(const rmt_ppm_encoder_config_t *config, rmt_encoder_handle_t *ret_encoder);
 esp_err_t rmt_ppm_encoder_delete(rmt_encoder_handle_t ret_encoder);
+
+/** @} */
 
 #ifdef __cplusplus
 }
