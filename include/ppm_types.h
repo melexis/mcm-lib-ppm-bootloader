@@ -22,6 +22,7 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the PPM types module.
+ * @{
  */
 #pragma once
 
@@ -109,6 +110,8 @@ typedef enum ppm_action_e {
     PPM_ACT_VERIFY,                     /**< verify memory */
     PPM_ACT_INVALID = 255               /**< invalid action */
 } ppm_action_t;                         /**< ppm action type */
+
+/** @} */
 
 #ifdef __cplusplus
 }

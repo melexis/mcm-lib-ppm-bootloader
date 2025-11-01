@@ -22,6 +22,7 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the RMT PPM frame transmitter module.
+ * @{
  */
 #pragma once
 
@@ -106,6 +107,8 @@ esp_err_t rmt_ppm_send_frame(ppm_frame_type_t type, const uint16_t * data, size_
  * @return  the length of the data received.
  */
 size_t rmt_ppm_wait_for_response_frame(ppm_frame_type_t * type, uint16_t ** data, uint16_t bus_timeout);
+
+/** @} */
 
 #ifdef __cplusplus
 }

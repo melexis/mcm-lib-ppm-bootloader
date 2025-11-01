@@ -1,31 +1,38 @@
 /**
  * @file
- * @brief The Melexis error module.
+ * @brief PPM bootloader error code module.
  * @internal
  *
  * @copyright (C) 2024-2025 Melexis N.V.
  *
- * Melexis N.V. is supplying this code for use with Melexis N.V. processor based microcontrollers only.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY,
- * INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.  MELEXIS N.V. SHALL NOT IN ANY CIRCUMSTANCES,
- * BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * @endinternal
  *
- * @ingroup application
+ * @ingroup lib_ppm_bootloader
  *
- * @details This file contains the implementations of the Melexis error module.
+ * @details Implementations of the PPM bootloader error code module.
  */
-#include <string.h>
+#include <stddef.h>
 
 #include "ppm_err.h"
 
-const struct {
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+static const struct {
     ppm_err_t code;
     const char *name;
-} ppmErrorCodesDict[] = {
+} ppm_error_codes_dict[] = {
     {PPM_OK, "operation was successful"},
     {PPM_FAIL_UNKNOWN, "unknown error"},
     {PPM_FAIL_INTERNAL, "internal error"},
@@ -41,14 +48,12 @@ const struct {
     {PPM_FAIL_VERIFY_FAILED, "verification failed"},
 };
 
-const char *ppmerr_ErrorCodeToName(ppm_err_t code) {
-    size_t i;
-
-    for (i = 0; i < sizeof(ppmErrorCodesDict) / sizeof(ppmErrorCodesDict[0]); ++i) {
-        if (ppmErrorCodesDict[i].code == code) {
-            return ppmErrorCodesDict[i].name;
+const char *ppm_err_to_string(ppm_err_t code) {
+    for (size_t i = 0; i < ARRAY_SIZE(ppm_error_codes_dict); ++i) {
+        if (ppm_error_codes_dict[i].code == code) {
+            return ppm_error_codes_dict[i].name;
         }
     }
 
-    return NULL;
+    return "Unknown error";
 }

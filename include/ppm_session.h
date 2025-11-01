@@ -22,6 +22,7 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the ppm session module.
+ * @{
  */
 #pragma once
 
@@ -280,6 +281,8 @@ esp_err_t ppmsession_doFlashCsCrc(const ppm_session_config_t * config, size_t le
  * @return  an error code representing the result of the operation.
  */
 esp_err_t ppmsession_doChipReset(const ppm_session_config_t * config, uint16_t * project_id);
+
+/** @} */
 
 #ifdef __cplusplus
 }

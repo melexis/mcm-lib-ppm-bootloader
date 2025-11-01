@@ -20,8 +20,10 @@
  * @endinternal
  *
  * @ingroup lib_ppm_bootloader
+ * @addtogroup lib_ppm_bootloader PPM Bootloader Library
  *
  * @details Definitions of the PPM bootloader module.
+ * @{
  */
 #pragma once
 
@@ -83,6 +85,8 @@ void ppmbtl_chipPower(bool enable);
  * @retval  false  otherwise
  */
 bool ppmbtl_chipPowered(void);
+
+/** @} */
 
 #ifdef __cplusplus
 }

@@ -59,7 +59,7 @@ static const char *TAG = "ppm_btl";
 static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
                                              uint32_t bitrate,
                                              uint32_t pattern_time,
-                                             const MlxChip_t ** chip_info);
+                                             const mlx_chip_t ** chip_info);
 
 /** Request the ic to exit from programming mode
  *
@@ -67,7 +67,8 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
  * @param[in]  broadcast  en/disable broadcast mode during upload.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool broadcast);
+static ppm_err_t ppmbtl_exitProgrammingMode(const mlx_chip_t * chip_info,
+                                            bool broadcast);
 
 /** Program the flash memory of the connected ic
  *
@@ -76,7 +77,9 @@ static ppm_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool br
  * @param[in]  ihex  intel hex container to be programmed.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_programFlashMemory(const mlx_chip_t * chip_info,
+                                           bool broadcast,
+                                           ihexContainer_t * ihex);
 
 /** Verify the flash memory of the connected ic
  *
@@ -84,7 +87,8 @@ static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool bro
  * @param[in]  ihex  intel hex container to be verified.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_verifyFlashMemory(const mlx_chip_t * chip_info,
+                                          ihexContainer_t * ihex);
 
 /** Program the flash cs memory of the connected ic
  *
@@ -93,7 +97,9 @@ static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
  * @param[in]  ihex  intel hex container to be programmed.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_programFlashCsMemory(const mlx_chip_t * chip_info,
+                                             bool broadcast,
+                                             ihexContainer_t * ihex);
 
 /** Verify the flash cs memory of the connected ic
  *
@@ -101,7 +107,8 @@ static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
  * @param[in]  ihex  intel hex container to be verified.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_verifyFlashCsMemory(const mlx_chip_t * chip_info,
+                                            ihexContainer_t * ihex);
 
 /** Program the eeprom memory of the connected ic
  *
@@ -110,7 +117,9 @@ static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
  * @param[in]  ihex  intel hex container to be programmed.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_programEepromMemory(const mlx_chip_t * chip_info,
+                                            bool broadcast,
+                                            ihexContainer_t * ihex);
 
 /** Verify the eeprom memory of the connected ic
  *
@@ -118,7 +127,8 @@ static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool br
  * @param[in]  ihex  intel hex container to be verified.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex);
+static ppm_err_t ppmbtl_verifyEepromMemory(const mlx_chip_t * chip_info,
+                                           ihexContainer_t * ihex);
 
 /** Check and if needed execute a programming keys session
  *
@@ -126,13 +136,14 @@ static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexCont
  * @param[in]  broadcast  en/disable broadcast mode during upload.
  * @return  an error code representing the result of the operation.
  */
-static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, bool broadcast);
+static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const mlx_chip_t * chip_info,
+                                                  bool broadcast);
 
 
 static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
                                              uint32_t bitrate,
                                              uint32_t pattern_time,
-                                             const MlxChip_t ** chip_info) {
+                                             const mlx_chip_t ** chip_info) {
     ppm_err_t result = PPM_OK;
 
     if (chip_info != NULL) {
@@ -165,7 +176,7 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
 
         if (result == PPM_OK) {
             ESP_LOGI(TAG, "Detected project id %i", project_id);
-            *chip_info = mlxchip_getCamcuChip(project_id);
+            *chip_info = mlxchip_get_camcu_chip(project_id);
             if ((*chip_info != NULL) && ((*chip_info)->bootloaders.ppm_loader == NULL)) {
                 result = PPM_FAIL_CHIP_NOT_SUPPORTED;
             }
@@ -177,7 +188,7 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
     return result;
 }
 
-static ppm_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool broadcast) {
+static ppm_err_t ppmbtl_exitProgrammingMode(const mlx_chip_t * chip_info, bool broadcast) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
     if (chip_info != NULL) {
         uint16_t proj_id_resp;
@@ -192,7 +203,7 @@ static ppm_err_t ppmbtl_exitProgrammingMode(const MlxChip_t * chip_info, bool br
     return result;
 }
 
-static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
+static ppm_err_t ppmbtl_programFlashMemory(const mlx_chip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
     ppm_err_t result;
     if ((ihex == NULL) || (chip_info == NULL)) {
         result = PPM_FAIL_INTERNAL;
@@ -230,7 +241,7 @@ static ppm_err_t ppmbtl_programFlashMemory(const MlxChip_t * chip_info, bool bro
     return result;
 }
 
-static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
+static ppm_err_t ppmbtl_verifyFlashMemory(const mlx_chip_t * chip_info, ihexContainer_t * ihex) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
         result = PPM_FAIL_INTERNAL;
@@ -267,7 +278,7 @@ static ppm_err_t ppmbtl_verifyFlashMemory(const MlxChip_t * chip_info, ihexConta
     return result;
 }
 
-static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
+static ppm_err_t ppmbtl_programFlashCsMemory(const mlx_chip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
         result = PPM_FAIL_INTERNAL;
@@ -314,7 +325,7 @@ static ppm_err_t ppmbtl_programFlashCsMemory(const MlxChip_t * chip_info, bool b
     return result;
 }
 
-static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
+static ppm_err_t ppmbtl_verifyFlashCsMemory(const mlx_chip_t * chip_info, ihexContainer_t * ihex) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
         result = PPM_FAIL_INTERNAL;
@@ -357,7 +368,7 @@ static ppm_err_t ppmbtl_verifyFlashCsMemory(const MlxChip_t * chip_info, ihexCon
     return result;
 }
 
-static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
+static ppm_err_t ppmbtl_programEepromMemory(const mlx_chip_t * chip_info, bool broadcast, ihexContainer_t * ihex) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
         result = PPM_FAIL_INTERNAL;
@@ -421,7 +432,7 @@ static ppm_err_t ppmbtl_programEepromMemory(const MlxChip_t * chip_info, bool br
     return result;
 }
 
-static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexContainer_t * ihex) {
+static ppm_err_t ppmbtl_verifyEepromMemory(const mlx_chip_t * chip_info, ihexContainer_t * ihex) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
     if ((ihex == NULL) || (chip_info == NULL)) {
         result = PPM_FAIL_INTERNAL;
@@ -477,7 +488,7 @@ static ppm_err_t ppmbtl_verifyEepromMemory(const MlxChip_t * chip_info, ihexCont
     return result;
 }
 
-static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const MlxChip_t * chip_info, bool broadcast) {
+static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const mlx_chip_t * chip_info, bool broadcast) {
     ppm_err_t result = PPM_FAIL_UNKNOWN;
 
     if ((chip_info->bootloaders.ppm_loader != NULL) &&
@@ -527,7 +538,7 @@ ppm_err_t ppmbtl_doAction(bool manpow,
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
 
-        const MlxChip_t * chip_info = NULL;
+        const mlx_chip_t * chip_info = NULL;
         retval = ppmbtl_enterProgrammingMode(broadcast, bitrate, pattern_time, &chip_info);
 
         if ((retval == PPM_OK) && (chip_info != NULL)) {
