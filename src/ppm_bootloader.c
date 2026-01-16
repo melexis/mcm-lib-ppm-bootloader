@@ -48,6 +48,14 @@
 static const char *TAG = "ppm_btl";
 
 
+/** Get a pointer to the flash crc calculation method for a specific memory type
+ *
+ * @param[in]  type  type of memory to calculate crc for.
+ *
+ * @return  flash crc calculation method.
+ */
+static flash_crc_func_t ppmbtl_getFlashCrcFunc(mlx_memory_type_t type);
+
 /** Request the ic to enter into programming mode
  *
  * @param[in]  broadcast  en/disable broadcast mode during upload.
@@ -140,6 +148,26 @@ static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const mlx_chip_t * chip_info,
                                                   bool broadcast);
 
 
+const struct {
+    mlx_memory_type_t type;
+    flash_crc_func_t func;
+} flash_crc_funcs[] = {
+    {MEM_TYPE_GANYMEDE_XFE, crc_calcGanyXfeCrc},
+    {MEM_TYPE_GANYMEDE_KF, crc_calcGanyKfCrc},
+    {MEM_TYPE_AMALTHEA_XFE, crc_calc24bitCrc},
+    {MEM_TYPE_AMALTHEA_KF, crc_calc24bitCrc},
+    {MEM_TYPE_AMALTHEA_XFE2, crc_calc24bitCrc},
+};
+
+static flash_crc_func_t ppmbtl_getFlashCrcFunc(mlx_memory_type_t type) {
+    for (int i = 0; i < sizeof(flash_crc_funcs) / sizeof(flash_crc_funcs[1]); i++) {
+        if (flash_crc_funcs[i].type == type) {
+            return flash_crc_funcs[i].func;
+        }
+    }
+    return NULL;
+}
+
 static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
                                              uint32_t bitrate,
                                              uint32_t pattern_time,
@@ -177,7 +205,10 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
         if (result == PPM_OK) {
             ESP_LOGI(TAG, "Detected project id %i", project_id);
             *chip_info = mlxchip_get_camcu_chip(project_id);
-            if ((*chip_info != NULL) && ((*chip_info)->bootloaders.ppm_loader == NULL)) {
+            if (*chip_info == NULL) {
+                *chip_info = mlxchip_get_ganymede_chip(project_id);
+            }
+            if ((*chip_info == NULL) || ((*chip_info)->bootloaders.ppm_loader == NULL)) {
                 result = PPM_FAIL_CHIP_NOT_SUPPORTED;
             }
         }
@@ -230,6 +261,7 @@ static ppm_err_t ppmbtl_programFlashMemory(const mlx_chip_t * chip_info, bool br
                                                                chip_info->memories.flash->erase_time * 1.25);
                     session_cfg.pageX_ack_timeout = (uint16_t)(chip_info->memories.flash->write_time * 1.25);
                     session_cfg.session_ack_timeout = session_cfg.pageX_ack_timeout + (uint16_t)(memLen * 0.0000625);
+                    session_cfg.crc_func = ppmbtl_getFlashCrcFunc(chip_info->memories.flash->type);
                     if (ppmsession_doFlashProgramming(&session_cfg, &content[0], memLen) != PPM_OK) {
                         result = PPM_FAIL_PROGRAMMING_FAILED;
                     }
@@ -260,7 +292,8 @@ static ppm_err_t ppmbtl_verifyFlashMemory(const mlx_chip_t * chip_info, ihexCont
                 result = PPM_FAIL_INTERNAL;
             } else {
                 (void)intelhex_getFilled(ihex, memStart, (uint8_t*)content, memLen);
-                uint32_t hex_crc = crc_calc24bitCrc(content, memLen / 2, 1u);
+                flash_crc_func_t crc_func = ppmbtl_getFlashCrcFunc(chip_info->memories.flash->type);
+                uint32_t hex_crc = crc_func(content, memLen / 2, 1u);
                 uint32_t chip_crc;
 
                 ppm_session_config_t session_cfg = PPM_SESSION_FLASH_CRC_DEFAULT;
