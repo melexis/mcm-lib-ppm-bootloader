@@ -288,11 +288,11 @@ static ppm_err_t ppmbtl_verifyFlashMemory(const mlx_chip_t * chip_info, ihexCont
             result = PPM_FAIL_MISSING_DATA;
         } else {
             uint16_t *content = (uint16_t *)malloc(memLen);
-            if (content == NULL) {
+            flash_crc_func_t crc_func = ppmbtl_getFlashCrcFunc(chip_info->memories.flash->type);
+            if ((content == NULL) || (crc_func == NULL)) {
                 result = PPM_FAIL_INTERNAL;
             } else {
                 (void)intelhex_getFilled(ihex, memStart, (uint8_t*)content, memLen);
-                flash_crc_func_t crc_func = ppmbtl_getFlashCrcFunc(chip_info->memories.flash->type);
                 uint32_t hex_crc = crc_func(content, memLen / 2, 1u);
                 uint32_t chip_crc;
 

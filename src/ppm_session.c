@@ -398,54 +398,56 @@ esp_err_t ppmsession_doFlashProgramming(const ppm_session_config_t * config,
 
     ESP_LOGD(TAG, "do flash programming session");
 
-    words_length = ceil((double)length / 2);
-    flash_words = (uint16_t*)calloc(words_length + config->page_size, sizeof(uint16_t));
+    if (config->crc_func != NULL) {
+        words_length = ceil((double)length / 2);
+        flash_words = (uint16_t*)calloc(words_length + config->page_size, sizeof(uint16_t));
 
-    if (flash_words != NULL) {
-        uint16_t * rx_data = NULL;
+        if (flash_words != NULL) {
+            uint16_t * rx_data = NULL;
 
-        for (uint16_t ctr = 0u; ctr < words_length; ctr++) {
-            flash_words[ctr] = (uint16_t)(flash_bytes[ctr * 2]) | ((uint16_t)(flash_bytes[(ctr * 2) + 1]) << 8);
-        }
-
-        uint32_t flash_crc = config->crc_func(flash_words, words_length, 1u);
-
-        /* we need to start at page 1 and end with page 0!!!! */
-        for (uint16_t ctr = 0u; ctr < config->page_size; ctr++) {
-            flash_words[words_length + ctr] = flash_words[ctr];
-        }
-
-        size_t rx_length = handle_session(config,
-                                          (uint16_t)((flash_crc >> 16) & 0xFFu),
-                                          (uint16_t)flash_crc,
-                                          &flash_words[config->page_size],
-                                          words_length,
-                                          &rx_data);
-
-        if (rx_data != NULL) {
-            /* lets check the ack content */
-            if ((rx_length == 4) &&
-                (rx_data[2] == (uint16_t)((flash_crc >> 16) & 0xFFu)) &&
-                (rx_data[3] == (uint16_t)flash_crc)) {
-                result = ESP_OK;
-            } else {
-                ESP_LOGE(TAG, "incorrect flash programming response");
+            for (uint16_t ctr = 0u; ctr < words_length; ctr++) {
+                flash_words[ctr] = (uint16_t)(flash_bytes[ctr * 2]) | ((uint16_t)(flash_bytes[(ctr * 2) + 1]) << 8);
             }
+
+            uint32_t flash_crc = config->crc_func(flash_words, words_length, 1u);
+
+            /* we need to start at page 1 and end with page 0!!!! */
+            for (uint16_t ctr = 0u; ctr < config->page_size; ctr++) {
+                flash_words[words_length + ctr] = flash_words[ctr];
+            }
+
+            size_t rx_length = handle_session(config,
+                                              (uint16_t)((flash_crc >> 16) & 0xFFu),
+                                              (uint16_t)flash_crc,
+                                              &flash_words[config->page_size],
+                                              words_length,
+                                              &rx_data);
+
+            if (rx_data != NULL) {
+                /* lets check the ack content */
+                if ((rx_length == 4) &&
+                    (rx_data[2] == (uint16_t)((flash_crc >> 16) & 0xFFu)) &&
+                    (rx_data[3] == (uint16_t)flash_crc)) {
+                    result = ESP_OK;
+                } else {
+                    ESP_LOGE(TAG, "incorrect flash programming response");
+                }
+            } else {
+                /* no ack was received */
+                if (config->request_ack == true) {
+                    /* we should have gotten an ack... but we did not*/
+                    ESP_LOGE(TAG, "no flash programming response received");
+                } else {
+                    /* no response expected at all */
+                    result = ESP_OK;
+                }
+            }
+
+            free(rx_data);
         } else {
-            /* no ack was received */
-            if (config->request_ack == true) {
-                /* we should have gotten an ack... but we did not*/
-                ESP_LOGE(TAG, "no flash programming response received");
-            } else {
-                /* no response expected at all */
-                result = ESP_OK;
-            }
+            /* mem allocation failed */
+            ESP_LOGE(TAG, "mem allocation failed for flash programming do session");
         }
-
-        free(rx_data);
-    } else {
-        /* mem allocation failed */
-        ESP_LOGE(TAG, "mem allocation failed for flash programming do session");
     }
 
     free(flash_words);
