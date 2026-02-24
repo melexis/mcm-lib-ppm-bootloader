@@ -56,6 +56,14 @@ esp_err_t ppmbtl_enable(void);
  */
 esp_err_t ppmbtl_disable(void);
 
+/** detect which chip is connected and read its project specific info
+ *
+ * @param[in]  manpow  enable manual power cycling.
+ * @param[out]  project_id  project ID of the connected chip.
+ * @returns  error code representing the result of the action.
+ */
+ppm_err_t ppmbtl_readChipInfo(bool manpow, uint16_t *project_id);
+
 /** perform a full programming/verification action to the connected chip
  *
  * @param[in]  manpow  enable manual power cycling.

@@ -337,7 +337,9 @@ esp_err_t ppmsession_doUnlock(const ppm_session_config_t * config, uint16_t * pr
     if (rx_data != NULL) {
         /* lets check the ack content */
         if (rx_length == 4) {
-            *project_id = rx_data[3];
+            if (project_id != NULL) {
+                *project_id = rx_data[3];
+            }
             result = ESP_OK;
         } else {
             ESP_LOGE(TAG, "incorrect unlock session response length");

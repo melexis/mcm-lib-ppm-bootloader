@@ -179,7 +179,7 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
             result = PPM_FAIL_BTL_ENTER_PPM_MODE;
         }
 
-        vTaskDelay(5 / portTICK_PERIOD_MS);
+        esp_rom_delay_us(5000);
 
         if (result == PPM_OK) {
             if (rmt_ppm_set_bitrate(bitrate) != ESP_OK) {
@@ -552,6 +552,51 @@ esp_err_t ppmbtl_enable(void) {
 
 esp_err_t ppmbtl_disable(void) {
     return rmt_ppm_disable();
+}
+
+ppm_err_t ppmbtl_readChipInfo(bool manpow, uint16_t *project_id) {
+    ppm_err_t retval = PPM_OK;
+
+    uint32_t pattern_time = 50000u;
+    if (manpow) {
+        pattern_time = 100000u;
+    } else if (ppmbtl_chipPowered()) {
+        ppmbtl_chipPower(false);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+
+    if (rmt_ppm_send_enter_ppm_pattern(pattern_time) != ESP_OK) {
+        retval = PPM_FAIL_BTL_ENTER_PPM_MODE;
+    }
+
+    esp_rom_delay_us(5000);
+
+    if ((retval == PPM_OK) && (rmt_ppm_set_bitrate(300000u) != ESP_OK)) {
+        retval = PPM_FAIL_SET_BAUD;
+    }
+
+    if ((retval == PPM_OK) && (rmt_ppm_send_calibration_frame() != ESP_OK)) {
+        retval = PPM_FAIL_CALIBRATION;
+    }
+
+    if (retval == PPM_OK) {
+        ppm_session_config_t unlock_cfg = PPM_SESSION_UNLOCK_DEFAULT;
+        unlock_cfg.request_ack = true;
+        if (ppmsession_doUnlock(&unlock_cfg, project_id) != ESP_OK) {
+            retval = PPM_FAIL_UNLOCK;
+        }
+    }
+
+    uint16_t proj_id_resp;
+    ppm_session_config_t reset_cfg = PPM_SESSION_CHIP_RESET_DEFAULT;
+    reset_cfg.request_ack = false;
+    (void)ppmsession_doChipReset(&reset_cfg, &proj_id_resp);
+
+    if (!manpow) {
+        ppmbtl_chipPower(false);
+    }
+
+    return retval;
 }
 
 ppm_err_t ppmbtl_doAction(bool manpow,
