@@ -179,7 +179,7 @@ static ppm_err_t ppmbtl_enterProgrammingMode(bool broadcast,
             result = PPM_FAIL_BTL_ENTER_PPM_MODE;
         }
 
-        vTaskDelay(5 / portTICK_PERIOD_MS);
+        esp_rom_delay_us(5000);
 
         if (result == PPM_OK) {
             if (rmt_ppm_set_bitrate(bitrate) != ESP_OK) {
@@ -569,7 +569,7 @@ ppm_err_t ppmbtl_readChipInfo(bool manpow, uint16_t *project_id) {
         retval = PPM_FAIL_BTL_ENTER_PPM_MODE;
     }
 
-    vTaskDelay(5 / portTICK_PERIOD_MS);
+    esp_rom_delay_us(5000);
 
     if ((retval == PPM_OK) && (rmt_ppm_set_bitrate(300000u) != ESP_OK)) {
         retval = PPM_FAIL_SET_BAUD;
