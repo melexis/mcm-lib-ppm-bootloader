@@ -587,12 +587,10 @@ ppm_err_t ppmbtl_readChipInfo(bool manpow, uint16_t *project_id) {
         }
     }
 
-    if (retval == PPM_OK) {
-        uint16_t proj_id_resp;
-        ppm_session_config_t reset_cfg = PPM_SESSION_CHIP_RESET_DEFAULT;
-        reset_cfg.request_ack = false;
-        (void)ppmsession_doChipReset(&reset_cfg, &proj_id_resp);
-    }
+    uint16_t proj_id_resp;
+    ppm_session_config_t reset_cfg = PPM_SESSION_CHIP_RESET_DEFAULT;
+    reset_cfg.request_ack = false;
+    (void)ppmsession_doChipReset(&reset_cfg, &proj_id_resp);
 
     if (!manpow) {
         ppmbtl_chipPower(false);
