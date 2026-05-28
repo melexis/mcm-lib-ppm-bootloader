@@ -22,11 +22,14 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Implementations of the PPM bootloader error code module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  */
 #include <stddef.h>
 
-#include "ppm_err.h"
+#include "ppm_bootloader_err.h"
 
+/** Getter for the size of an array */
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 static const struct {

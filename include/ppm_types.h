@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the PPM types module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  * @{
  */
 #pragma once
@@ -62,16 +64,16 @@ extern "C" {
 /** EPM pattern pulse 4 length [us] */
 #define EPM_PATTERN_PULSE_TIME_4 45
 
-/** ppm frame type enum */
+/** PPM frame type enum */
 typedef enum __attribute__((packed)) ppm_frame_type_e {
     ftSession = 0,                      /**< session frame type */
     ftPage = 1,                         /**< page frame type */
     ftCalibration = 2,                  /**< calibration frame type */
-    ftEnter_Ppm = 3,                    /**< enter ppm pattern frame type */
+    ftEnter_Ppm = 3,                    /**< enter PPM pattern frame type */
     ftUnknown = 0xFF,                   /**< unknown frame type */
-} ppm_frame_type_t;                     /**< ppm frame type */
+} ppm_frame_type_t;                     /**< PPM frame type */
 
-/** ppm session id enum */
+/** PPM session id enum */
 typedef enum session_id_e {
     PPM_SESSION_PROG_KEYS = 0x03u,      /**< programming keys session id */
     PPM_SESSION_FLASH_PROG = 0x04u,     /**< flash programming session id */
@@ -83,9 +85,9 @@ typedef enum session_id_e {
     PPM_SESSION_CHIP_RESET = 0x45u,     /**< chip reset session id */
     PPM_SESSION_EEPROM_CRC = 0x47u,     /**< eeprom crc session id */
     PPM_SESSION_FLASH_CS_CRC = 0x48u,   /**< flash cs crc session id */
-} ppm_session_id_t;                     /**< ppm session id type */
+} ppm_session_id_t;                     /**< PPM session id type */
 
-/** ppm session configuration structure */
+/** PPM session configuration structure */
 typedef struct ppm_session_s {
     ppm_session_id_t session_id;        /**< session type identifier (0x00..0x7F) */
     uint8_t page_size;                  /**< page size (in words) of this session's pages (0x00..0xFF) */
@@ -94,22 +96,22 @@ typedef struct ppm_session_s {
     uint16_t page0_ack_timeout;         /**< first page acknowledge timeout (ms) */
     uint16_t session_ack_timeout;       /**< session acknowledge timeout (ms) */
     flash_crc_func_t crc_func;          /**< memory crc calculation method */
-} ppm_session_config_t;                 /**< ppm session configuration type */
+} ppm_session_config_t;                 /**< PPM session configuration type */
 
-/** ppm memory types enum */
+/** PPM memory types enum */
 typedef enum ppm_memory_e {
     PPM_MEM_NVRAM = 0,                  /**< non volatile memory */
     PPM_MEM_FLASH,                      /**< flash memory */
     PPM_MEM_FLASH_CS,                   /**< flash configuration memory */
     PPM_MEM_INVALID = 255               /**< invalid memory */
-} ppm_memory_t;                         /**< ppm memory type */
+} ppm_memory_t;                         /**< PPM memory type */
 
-/** ppm action types enum */
+/** PPM action types enum */
 typedef enum ppm_action_e {
     PPM_ACT_PROGRAM = 0,                /**< program memory */
     PPM_ACT_VERIFY,                     /**< verify memory */
     PPM_ACT_INVALID = 255               /**< invalid action */
-} ppm_action_t;                         /**< ppm action type */
+} ppm_action_t;                         /**< PPM action type */
 
 /** @} */
 

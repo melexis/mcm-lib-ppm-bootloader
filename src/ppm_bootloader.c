@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Implementations of the PPM bootloader module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  */
 #include <stdbool.h>
 #include <stdint.h>
@@ -39,7 +41,7 @@
 #include "mlx_chip.h"
 #include "mlx_crc.h"
 
-#include "ppm_err.h"
+#include "ppm_bootloader_err.h"
 #include "ppm_session.h"
 #include "rmt_ppm.h"
 
@@ -148,9 +150,10 @@ static ppm_err_t ppmbtl_checkAndDoProgKeysSession(const mlx_chip_t * chip_info,
                                                   bool broadcast);
 
 
+/** Mapping to link memory type with their respective crc calculation function */
 const struct {
-    mlx_memory_type_t type;
-    flash_crc_func_t func;
+    mlx_memory_type_t type;       /**< memory type */
+    flash_crc_func_t func;        /**< crc calculation function */
 } flash_crc_funcs[] = {
     {MEM_TYPE_GANYMEDE_XFE, crc_calcGanyXfeCrc},
     {MEM_TYPE_GANYMEDE_KF, crc_calcGanyKfCrc},

@@ -23,6 +23,8 @@
  * @addtogroup lib_ppm_bootloader PPM Bootloader Library
  *
  * @details Definitions of the PPM bootloader module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  * @{
  */
 #pragma once
@@ -34,29 +36,29 @@
 
 #include "intelhex.h"
 
-#include "ppm_err.h"
+#include "ppm_bootloader_err.h"
 #include "ppm_types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** initialize the PPM bootloader module */
+/** Initialize the PPM bootloader module */
 void ppmbtl_init(void);
 
-/** enable the ppm interface
+/** Enable the ppm interface
  *
  * @returns  error code representing the result of the action.
  */
 esp_err_t ppmbtl_enable(void);
 
-/** disable the ppm interface
+/** Disable the ppm interface
  *
  * @returns  error code representing the result of the action.
  */
 esp_err_t ppmbtl_disable(void);
 
-/** detect which chip is connected and read its project specific info
+/** Detect which chip is connected and read its project specific info
  *
  * @param[in]  manpow  enable manual power cycling.
  * @param[out]  project_id  project ID of the connected chip.
@@ -64,7 +66,7 @@ esp_err_t ppmbtl_disable(void);
  */
 ppm_err_t ppmbtl_readChipInfo(bool manpow, uint16_t *project_id);
 
-/** perform a full programming/verification action to the connected chip
+/** Perform a full programming/verification action to the connected chip
  *
  * @param[in]  manpow  enable manual power cycling.
  * @param[in]  broadcast  enable broadcast mode during upload.
@@ -81,13 +83,13 @@ ppm_err_t ppmbtl_doAction(bool manpow,
                           ppm_action_t action,
                           ihexContainer_t * ihex);
 
-/** library callout to en/disable the chip power
+/** Library callout to en/disable the chip power
  *
  * @param[in]  enable  whether to enable the chip power.
  */
 void ppmbtl_chipPower(bool enable);
 
-/** library callout to check whether the chip is powered
+/** Library callout to check whether the chip is powered
  *
  * @retval  true  chip is currently powered.
  * @retval  false  otherwise

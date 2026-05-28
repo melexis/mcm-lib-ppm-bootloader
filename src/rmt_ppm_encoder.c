@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Implementations of the RMT PPM encoder module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  */
 #include <stdint.h>
 #include <stdlib.h>
@@ -40,15 +42,17 @@
 static const char *TAG = "rmt_ppm_encoder";
 
 #ifndef MIN
-   #define MIN(x, y) ((x) < (y)?(x):(y))
+/** Macro to get the minimum out of 2 values */
+#define MIN(x, y) ((x) < (y)?(x):(y))
 #endif
 
-typedef struct rmt_ppm_encoder_t {
+/** RMT PPM encoder state structure */
+typedef struct rmt_ppm_encoder_s {
     rmt_encoder_t base;                 /**< encoder base class */
     ppm_frame_type_t last_frame_type;   /**< current ongoing PPM frame type */
     size_t last_byte_index;             /**< current byte index */
     int last_bits_offset;               /**< current bit pair index (0, 2, 4, 6) */
-} rmt_ppm_encoder_t;
+} rmt_ppm_encoder_t;                    /**< RMT PPM encoder state type */
 
 
 /** Reset implementation
@@ -253,8 +257,6 @@ static esp_err_t rmt_del_ppm_encoder(rmt_encoder_t *encoder) {
     return ESP_OK;
 }
 
-/** Create encoder
- */
 esp_err_t rmt_ppm_encoder_new(const rmt_ppm_encoder_config_t *config, rmt_encoder_handle_t *ret_encoder) {
     esp_err_t ret = ESP_OK;
     ESP_GOTO_ON_FALSE(config && ret_encoder, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -263,7 +265,6 @@ esp_err_t rmt_ppm_encoder_new(const rmt_ppm_encoder_config_t *config, rmt_encode
     ppm_encoder->base.encode = rmt_encode_ppm;
     ppm_encoder->base.del = rmt_del_ppm_encoder;
     ppm_encoder->base.reset = rmt_ppm_encoder_reset;
-    // return general encoder handle
     *ret_encoder = &ppm_encoder->base;
     ESP_LOGD(TAG, "new bytes encoder @%p", ppm_encoder);
 err:
