@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the ppm session module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  * @{
  */
 #pragma once

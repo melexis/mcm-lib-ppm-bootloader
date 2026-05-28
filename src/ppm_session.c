@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Implementation of the ppm sessions.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  */
 #include <string.h>
 #include <stdint.h>

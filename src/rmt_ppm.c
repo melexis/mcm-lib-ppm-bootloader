@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Implementations of the RMT PPM frame transmitter.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  */
 #include <stdbool.h>
 #include <stddef.h>
@@ -44,26 +46,28 @@
 
 static const char *TAG = "rmt_ppm";
 
+/** Number of RMT symbols per byte to transfer */
 #define SYMBOLS_PER_BYTE 4
 
+/** PPM TX item union */
 typedef union {
-    uint8_t raw[1 + 256 + 2];
+    uint8_t raw[1 + 256 + 2];           /**< raw data */
     struct __attribute__((packed)) {
-        ppm_frame_type_t type;
+        ppm_frame_type_t type;          /**< PPM frame type */
         union {
             struct __attribute__((packed)) {
-                uint8_t pulse_times[4];
-                size_t pulse_len;
-                uint32_t time;
+                uint8_t pulse_times[4]; /**< EPM pulse times */
+                size_t pulse_len;       /**< number of items in `pulse_times` */
+                uint32_t time;          /**< time to generate EPM pulses */
             } epm_pattern;
             struct __attribute__((packed)) {} calib;
             struct __attribute__((packed)) {
-                uint8_t data[256 + 2];
-                size_t data_len;
+                uint8_t data[256 + 2];  /**< data to be tranfered */
+                size_t data_len;        /**< number of bytes in `data` */
             } frame;
         };
     };
-} ppm_tx_item_t;
+} ppm_tx_item_t;                        /**< PPM TX item type */
 
 /** EPM pattern total length [us] */
 const uint32_t epm_pattern_total = EPM_PATTERN_PULSE_TIME_1 + EPM_PATTERN_PULSE_TIME_2 +

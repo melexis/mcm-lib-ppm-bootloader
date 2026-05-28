@@ -22,6 +22,8 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the RMT PPM encoder module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  * @{
  */
 #pragma once
@@ -33,9 +35,22 @@
 extern "C" {
 #endif
 
+/** RMT PPM encoder configuration type */
 typedef struct {} rmt_ppm_encoder_config_t;
 
+/** Create a new RMT PPM encoder
+ *
+ * @param[in]  config  configuration to be applied.
+ * @param[out]  ret_encoder  new created encoder.
+ * @returns  error code representing the result of the action.
+ */
 esp_err_t rmt_ppm_encoder_new(const rmt_ppm_encoder_config_t *config, rmt_encoder_handle_t *ret_encoder);
+
+/** Delete an RMT PPM encoder
+ *
+ * @param[in]  ret_encoder  encoder to be deleted.
+ * @returns  error code representing the result of the action.
+ */
 esp_err_t rmt_ppm_encoder_delete(rmt_encoder_handle_t ret_encoder);
 
 /** @} */

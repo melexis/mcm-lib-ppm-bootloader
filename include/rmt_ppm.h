@@ -22,12 +22,14 @@
  * @ingroup lib_ppm_bootloader
  *
  * @details Definitions of the RMT PPM frame transmitter module.
+ *
+ * @attention FOR DEMO PURPOSES ONLY!!
  * @{
  */
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "driver/gpio.h"
 
